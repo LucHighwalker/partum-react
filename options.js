@@ -1,8 +1,9 @@
+const fs = require('fs');
+
 module.exports = class Options extends Object {
-  constructor(name, destination, options = {}) {
+  constructor(name, options = {}) {
     super();
     this.name = name;
-    this.destination = destination;
     this.jsx = false;
     this.redux = false;
     this.styleExt = 'css';
@@ -13,7 +14,7 @@ module.exports = class Options extends Object {
 
   processArgs(args) {
     for (let i = 1; i < args.length; i++) {
-      switch(args[i]) {
+      switch (args[i]) {
         case 'redux':
           this.redux = true;
           break;
@@ -23,16 +24,44 @@ module.exports = class Options extends Object {
           break;
 
         case 'scss':
-          this.styleExt = 'scss'
+          this.styleExt = 'scss';
           break;
 
         case 'sass':
-          this.styleExt = 'sass'
+          this.styleExt = 'sass';
           break;
 
         default:
-          throw new Error(`Invalid option [${args[i]}]. Use 'partum --help' for a list of options.`)
+          throw new Error(
+            `Invalid option [${
+              args[i]
+            }]. Use 'partum --help' for a list of options.`
+          );
       }
     }
+  }
+
+  save() {
+    const currentDir = process.cwd();
+    const currDirArr = currentDir.split('/');
+    const currDirName = currDirArr[currDirArr.length - 1];
+    const filePath =
+      this.name === currDirName ? currentDir : `${currentDir}/${this.name}`;
+
+    this.ensureDirExists(filePath);
+    fs.writeFile(
+      `${filePath}/partum.json`,
+      JSON.stringify(this, null, 2),
+      err => {
+        if (err) throw err;
+      }
+    );
+  }
+
+  ensureDirExists(filePath) {
+    if (fs.existsSync(filePath)) {
+      return true;
+    }
+    fs.mkdirSync(filePath);
   }
 };

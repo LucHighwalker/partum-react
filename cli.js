@@ -24,7 +24,6 @@ async function sh(cmd) {
 async function main() {
   try {
     let name = '';
-    let destination = '';
     const command = args[0] ? args[0] : 'react-app';
     switch (command) {
       case '-h':
@@ -34,20 +33,25 @@ async function main() {
 
       case '-i':
       case '--init':
-        destination = process.cwd();
+        const destination = process.cwd();
         const destArr = destination.split('/');
         name = destArr[destArr.length - 1];
+        options = new Options(name);
+        options.processArgs(args);
+        options.save();
         break;
 
       default:
         if (command[0] === '-') {
-          throw new Error(`Invalid command [${command}]. Use 'partum --help' for a list of commands.`);
+          throw new Error(
+            `Invalid command [${command}]. Use 'partum --help' for a list of commands.`
+          );
         }
         name = command;
-        destination = `${process.cwd()}/${name}`;
+        options = new Options(name);
+        options.processArgs(args);
+        options.save();
     }
-    options = new Options(name, destination);
-    options.processArgs(args);
   } catch (error) {
     console.error(error);
   }
