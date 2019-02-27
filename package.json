@@ -1,0 +1,28 @@
+{
+  "name": "partum-react",
+  "version": "0.0.1",
+  "description": "I wasn't a huge fan of the create-react-app cli. So I made my own.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LucHighwalker/ts-node-cli"
+  },
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "partum": "./cli.js"
+  },
+  "keywords": [
+    "cli",
+    "typescript",
+    "starter",
+    "component",
+    "redux",
+    "create",
+    "react",
+    "app"
+  ],
+  "author": "LucHighwalker",
+  "license": "ISC"
+}
