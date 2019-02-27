@@ -4,8 +4,8 @@ const exec = sys.exec;
 
 const package = JSON.parse(JSON.stringify(require('./package.json')));
 
-const Options = require('./options');
-const HelpMsg = require('./helpMsg');
+const Options = require('./src/options');
+const HelpMsg = require('./src/helpMsg');
 
 const [, , ...args] = process.argv;
 
@@ -26,6 +26,11 @@ async function main() {
     let name = '';
     const command = args[0] ? args[0] : 'react-app';
     switch (command) {
+      case '-v':
+      case '--version':
+        console.log(`Partum-React version: ${package.version}`);
+        break;
+
       case '-h':
       case '--help':
         console.log(HelpMsg);
