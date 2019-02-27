@@ -2,6 +2,8 @@
 const sys = require('child_process');
 const exec = sys.exec;
 
+const copy = require('ncp').ncp;
+
 const package = JSON.parse(JSON.stringify(require('./package.json')));
 
 const Options = require('./src/options');
@@ -41,9 +43,7 @@ async function main() {
         const destination = process.cwd();
         const destArr = destination.split('/');
         name = destArr[destArr.length - 1];
-        options = new Options(name);
-        options.processArgs(args);
-        options.save();
+        initializeProject(name, false);
         break;
 
       default:
@@ -53,12 +53,34 @@ async function main() {
           );
         }
         name = command;
-        options = new Options(name);
-        options.processArgs(args);
-        options.save();
+        initializeProject(name); // new project
     }
   } catch (error) {
     console.error(error);
+  }
+}
+
+function initializeProject(name, newProj = true) {
+  options = new Options(name);
+  options.processArgs(args);
+  options.save();
+  if (newProj) {
+    const boilerPath = `${__dirname}/boiler/`;
+    const filePath = `${process.cwd()}/${name}`;
+    copy(boilerPath + 'main', filePath, err => {
+      if (err) {
+        throw err;
+      } else {
+        const srcPath = options.jsx ? 'jsx' : 'js';
+        copy(boilerPath + srcPath, filePath, err => {
+          if (err) {
+            throw err
+          } else {
+            // keep going
+          }
+        })
+      }
+    });
   }
 }
 

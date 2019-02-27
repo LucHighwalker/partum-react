@@ -24,5 +24,8 @@
     "app"
   ],
   "author": "LucHighwalker",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "ncp": "^2.0.0"
+  }
 }
