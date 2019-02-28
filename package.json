@@ -26,6 +26,7 @@
   "author": "LucHighwalker",
   "license": "ISC",
   "dependencies": {
-    "ncp": "^2.0.0"
+    "ncp": "^2.0.0",
+    "replace-in-file": "^3.4.3"
   }
 }

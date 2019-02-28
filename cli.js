@@ -3,6 +3,7 @@ const sys = require('child_process');
 const exec = sys.exec;
 
 const copy = require('ncp').ncp;
+const replace = require('replace-in-file');
 
 const package = JSON.parse(JSON.stringify(require('./package.json')));
 
@@ -21,6 +22,69 @@ async function sh(cmd) {
       }
     });
   });
+}
+
+function initializeProject(name, newProj = true) {
+  options = new Options(name);
+  options.processArgs(args);
+  options.save();
+  if (newProj) {
+    const boilerPath = `${__dirname}/boiler/`;
+    const filePath = `${process.cwd()}/${name}`;
+    copy(boilerPath + 'main', filePath, err => {
+      if (err) {
+        throw err;
+      } else {
+        const srcPath = options.jsx ? 'jsx' : 'js';
+        copy(boilerPath + srcPath, filePath, err => {
+          if (err) {
+            throw err;
+          } else {
+            const stylePath = `styles/${options.styleExt}`;
+            copy(boilerPath + stylePath, filePath, err => {
+              if (err) {
+                throw err;
+              } else {
+                if (options.styleExt !== 'css') {
+                  replace(
+                    {
+                      files: [
+                        `${filePath}/src/App.${srcPath}`,
+                        `${filePath}/src/index.${srcPath}`
+                      ],
+                      from: /(.css)/gm,
+                      to: `.${options.styleExt}`
+                    },
+                    (err, files) => {
+                      if (err) {
+                        throw err;
+                      } else {
+                        copy(boilerPath + 'package/sass', filePath, err => {
+                          if (err) {
+                            throw err;
+                          } else {
+                            // do stuff
+                          }
+                        });
+                      }
+                    }
+                  );
+                } else if (options.styleExt === 'css') {
+                  copy(boilerPath + 'package/base', filePath, err => {
+                    if (err) {
+                      throw err;
+                    } else {
+                      // do stuff
+                    }
+                  })
+                }
+              }
+            });
+          }
+        });
+      }
+    });
+  }
 }
 
 async function main() {
@@ -57,30 +121,6 @@ async function main() {
     }
   } catch (error) {
     console.error(error);
-  }
-}
-
-function initializeProject(name, newProj = true) {
-  options = new Options(name);
-  options.processArgs(args);
-  options.save();
-  if (newProj) {
-    const boilerPath = `${__dirname}/boiler/`;
-    const filePath = `${process.cwd()}/${name}`;
-    copy(boilerPath + 'main', filePath, err => {
-      if (err) {
-        throw err;
-      } else {
-        const srcPath = options.jsx ? 'jsx' : 'js';
-        copy(boilerPath + srcPath, filePath, err => {
-          if (err) {
-            throw err
-          } else {
-            // keep going
-          }
-        })
-      }
-    });
   }
 }
 
