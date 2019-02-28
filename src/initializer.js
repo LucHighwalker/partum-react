@@ -8,7 +8,7 @@ module.exports = class Initializer {
   constructor(options, destination) {
     this.options = options;
     this.boilerPath = path.join(__dirname, '../boiler/');
-    this.tempPath = path.join(__dirname, '../_temp');
+    this.tempPath = path.join(__dirname, '../_temp/');
     this.destination = destination;
 
     rmdir(this.tempPath, err => {
@@ -97,7 +97,17 @@ module.exports = class Initializer {
         if (err) {
           reject(err);
         } else {
-          resolve(true);
+          replace({
+            files: this.tempPath + 'package.json',
+            from: /(---name---)/gm,
+            to: this.options.name
+          }, (err, _) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(true);
+            }
+          })
         }
       });
     });
