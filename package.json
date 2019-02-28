@@ -27,6 +27,7 @@
   "license": "ISC",
   "dependencies": {
     "ncp": "^2.0.0",
-    "replace-in-file": "^3.4.3"
+    "replace-in-file": "^3.4.3",
+    "rimraf": "^2.6.3"
   }
 }
