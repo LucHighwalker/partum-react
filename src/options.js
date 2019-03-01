@@ -4,7 +4,7 @@ module.exports = class Options extends Object {
   constructor(name, options = {}) {
     super();
     this.name = name;
-    this.jsx = false;
+    this.jsx = true;
     this.redux = false;
     this.styleExt = 'css';
     for (var attr in options) {
@@ -19,8 +19,8 @@ module.exports = class Options extends Object {
           this.redux = true;
           break;
 
-        case 'jsx':
-          this.jsx = true;
+        case 'js':
+          this.jsx = false;
           break;
 
         case 'scss':

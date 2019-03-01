@@ -4,5 +4,5 @@ module.exports = `Commands:
 \t-i, --init: Initializes partum in the current directory.
 Options (default):
 \tredux (false): Enables redux support.
-\tjsx (false): Uses the jsx file format instead of js.
+\tjs (false): Uses the js file format instead of jsx.
 \tscss || sass (css): Uses scss or sass for stylesheets respectively.`
