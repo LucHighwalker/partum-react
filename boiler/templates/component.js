@@ -2,6 +2,7 @@ module.exports = (name, className, styleExt, state = null) => {
   const constructor = state === null ? '' : `
   constructor(props) {
     super(props);
+    
     ${state}
   }
 

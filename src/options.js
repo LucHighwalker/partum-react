@@ -1,5 +1,7 @@
 const fs = require('fs');
 
+const helper = require('./helper');
+
 module.exports = class Options extends Object {
   constructor(name, options = {}) {
     super();
@@ -48,7 +50,7 @@ module.exports = class Options extends Object {
     const filePath =
       this.name === currDirName ? currentDir : `${currentDir}/${this.name}`;
 
-    this.ensureDirExists(filePath);
+    helper.ensureDirExists(filePath);
     fs.writeFile(
       `${filePath}/partum.json`,
       JSON.stringify(this, null, 2),
@@ -56,12 +58,5 @@ module.exports = class Options extends Object {
         if (err) throw err;
       }
     );
-  }
-
-  ensureDirExists(filePath) {
-    if (fs.existsSync(filePath)) {
-      return true;
-    }
-    fs.mkdirSync(filePath);
   }
 };

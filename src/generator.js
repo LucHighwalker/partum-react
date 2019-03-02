@@ -13,7 +13,7 @@ function capitalize(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-class Generator {
+module.exports = class Generator {
   constructor() {
     const options = JSON.parse(JSON.stringify(require(optionsPath)));
     this.options = new Options(options.name, options);
@@ -23,14 +23,34 @@ class Generator {
     const name = args[1];
     const fileExt = this.options.jsx ? 'jsx' : 'js';
     const fileName = `${name}.${fileExt}`;
-    // helper.ensureDirExists(path.join(process.cwd, '/src/components/'));
     const filePath = path.join(process.cwd(), `/src/components/${name}/`);
     const className = capitalize(name);
+    const states = [];
+
+    let functional = false;
+
+    for (let i = 2; i < args.length; i += 1) {
+      switch (args[i]) {
+        case '-f':
+        case '--func':
+        case '--functional':
+          functional = true;
+
+        default:
+          if (/(=)/.test(args[i]) && !functional) {
+            states.push(args[i]);
+          } else {
+            console.log('Invalid option(s) for component generation.');
+          }
+      }
+    }
+
+    const state = this.processStates(states);
 
     helper.ensureDirExists(filePath);
     fs.writeFile(
       path.join(filePath, fileName),
-      componentTemp(name, className, this.options.styleExt),
+      componentTemp(name, className, this.options.styleExt, state),
       err => {
         if (err) {
           console.error(err.message);
@@ -38,6 +58,21 @@ class Generator {
         this.generateStyle(name, filePath);
       }
     );
+  }
+
+  processStates(states) {
+    if (states.length === 0) {
+      return null;
+    } else {
+      let processed = '';
+      let comma = '';
+      for (let i = 0; i < states.length; i += 1) {
+        const split = states[i].split('=');
+        processed = `${processed}${comma}\n\t\t\t${split[0]}: ${split[1]}`;
+        comma = ',';
+      }
+      return `this.state = {${processed}\n\t\t}`;
+    }
   }
 
   generateStyle(name, filePath) {
@@ -50,6 +85,4 @@ class Generator {
       console.log(`Generated ${name} component.`);
     });
   }
-}
-
-module.exports = Generator;
+};
