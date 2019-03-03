@@ -4,9 +4,9 @@
   "description": "I wasn't a huge fan of the create-react-app cli. So I made my own.",
   "repository": {
     "type": "git",
-    "url": "https://github.com/LucHighwalker/ts-node-cli"
+    "url": "https://github.com/LucHighwalker/partum-react"
   },
-  "main": "index.js",
+  "main": "cli.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
