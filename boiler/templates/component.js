@@ -9,7 +9,7 @@ module.exports = (name, className, styleExt, state = null) => {
 `;
 
   return `import React, { Component } from 'react';
-import './${name}.${styleExt}'
+import './${name}.${styleExt}';
 
 class ${className} extends Component {${constructor}
   render() {

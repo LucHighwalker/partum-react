@@ -1,8 +1,22 @@
 const path = require('path');
+const sys = require('child_process');
+const exec = sys.exec;
 
 const copy = require('ncp').ncp;
 const replace = require('replace-in-file');
 const rmdir = require('rimraf');
+
+async function sh(cmd) {
+  return new Promise(function(resolve, reject) {
+    exec(cmd, (err, stdout, stderr) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve({ stdout, stderr });
+      }
+    });
+  });
+}
 
 module.exports = class Initializer {
   constructor(options, destination) {
@@ -119,11 +133,16 @@ module.exports = class Initializer {
         if (err) {
           reject(err);
         } else {
-          rmdir(this.tempPath, err => {
+          rmdir(this.tempPath, async err => {
             if (err) {
               reject(err);
             } else {
-              resolve(true);
+              try {
+                await sh(`mkdir ${this.destination}/src/components`);
+                resolve(true);
+              } catch (err) {
+                reject(err)
+              }
             }
           });
         }
