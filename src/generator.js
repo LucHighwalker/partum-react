@@ -5,6 +5,7 @@ const Options = require('./options');
 const optionsPath = path.join(process.cwd(), 'partum.json');
 
 const componentTemp = require('../boiler/templates/component');
+const funcComponentTemp = require('../boiler/templates/funcComponent');
 const styleTemp = require('../boiler/templates/style');
 
 const helper = require('./helper');
@@ -24,7 +25,7 @@ module.exports = class Generator {
     const fileExt = this.options.jsx ? 'jsx' : 'js';
     const fileName = `${name}.${fileExt}`;
     const filePath = path.join(process.cwd(), `/src/components/${name}/`);
-    const className = capitalize(name);
+    const componentName = capitalize(name);
     const states = [];
 
     let functional = false;
@@ -47,10 +48,14 @@ module.exports = class Generator {
 
     const state = this.processStates(states);
 
+    const content = functional ?
+      funcComponentTemp(name, componentName, this.options.styleExt) :
+      componentTemp(name, componentName, this.options.styleExt, state);
+
     helper.ensureDirExists(filePath);
     fs.writeFile(
       path.join(filePath, fileName),
-      componentTemp(name, className, this.options.styleExt, state),
+      content,
       err => {
         if (err) {
           console.error(err.message);
