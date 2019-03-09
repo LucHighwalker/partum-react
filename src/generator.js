@@ -36,6 +36,7 @@ module.exports = class Generator {
         case '--func':
         case '--functional':
           functional = true;
+          break;
 
         default:
           if (/(=)/.test(args[i]) && !functional) {
@@ -67,16 +68,15 @@ module.exports = class Generator {
 
   processStates(states) {
     if (states.length === 0) {
-      return null;
+      return '';
     } else {
       let processed = '';
-      let comma = '';
       for (let i = 0; i < states.length; i += 1) {
         const split = states[i].split('=');
-        processed = `${processed}${comma}\n\t\t\t${split[0]}: ${split[1]}`;
-        comma = ',';
+        const value = helper.stateValue(split[1]);
+        processed = `${processed}\n\t\t\t${split[0]}: ${value},`;
       }
-      return `this.state = {${processed}\n\t\t}`;
+      return `\n\t\tthis.state = {${processed}\n\t\t}`;
     }
   }
 
