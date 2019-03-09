@@ -1,7 +1,7 @@
 module.exports = (name) => {
   return `.${name} {
-  padding: 5px;
-  border: 1px solid grey;
-  border-radius: 5px;
+\tpadding: 5px;
+\tborder: 1px solid grey;
+\tborder-radius: 5px;
 }`
 }
