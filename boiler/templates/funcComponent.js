@@ -1,15 +1,14 @@
 module.exports = (name, funcName, styleExt) => {
-    return `import React, { Component } from 'react';
+  return `import React from 'react';
 import './${name}.${styleExt}';
-    
-function ${funcName}(props){
-    return (
-        <div className='${name}'>
-            <p>${name} works!</p>
-        </div>
-    );
+
+function ${funcName}(props) {
+\treturn (
+\t\t<div className="${name}">
+\t\t\t<p>${name} works!</p>
+\t\t</div>
+\t);
 }
-  
-export default ${funcName};
-`;
+
+export default ${funcName};\n`;
 };

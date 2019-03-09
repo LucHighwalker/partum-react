@@ -36,6 +36,7 @@ module.exports = class Generator {
         case '--func':
         case '--functional':
           functional = true;
+          break;
 
         default:
           if (/(=)/.test(args[i]) && !functional) {
