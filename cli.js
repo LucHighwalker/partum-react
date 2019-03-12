@@ -13,7 +13,7 @@ async function main() {
     let name = '';
     let destination = '';
     let options = undefined;
-    const command = args[0] ? args[0] : 'react-app';
+    const command = args[0] ? args[0] : '-h';
 
     switch (command) {
       case '-v':

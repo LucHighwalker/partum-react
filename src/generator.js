@@ -42,7 +42,7 @@ module.exports = class Generator {
           if (/(=)/.test(args[i]) && !functional) {
             states.push(args[i]);
           } else {
-            console.log('Invalid option(s) for component generation.');
+            process.stdout.write('Invalid option(s) for component generation.\n');
           }
       }
     }
@@ -85,9 +85,9 @@ module.exports = class Generator {
     ensureDirExists(filePath);
     fs.writeFile(path.join(filePath, fileName), styleTemp(name), err => {
       if (err) {
-        console.error(err.message);
+        throw err;
       }
-      console.log(`Generated ${name} component.`);
+      process.stdout.write(`Generated ${name} component.\n`);
     });
   }
 };

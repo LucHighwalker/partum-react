@@ -135,8 +135,7 @@ module.exports = class Initializer {
 
                 process.stdout.write(`\nrunning npm install inside ${this.destination}\n`);
                 loading.startLoading();
-                await shell(`npm install --prefix ${this.destination}`, true);
-                loading.stopLoading();
+                await shell(`npm install --prefix ${this.destination}`, true, () => loading.stopLoading());
 
                 resolve(true);
               } catch (err) {

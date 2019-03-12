@@ -21,13 +21,14 @@ function capitalize(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-function shell(command, log = false) {
+function shell(command, log = false, cb = null) {
   return new Promise(function(resolve, reject) {
     exec(command, (err, stdout, stderr) => {
       if (err) {
         reject(err);
       } else {
-        if (log) process.stdout.write(`\n\n${stdout}\n\n`);
+        if (cb) cb();
+        if (log) process.stdout.write(`\n${stdout}\n\n`);
         resolve({ stdout, stderr });
       }
     });
