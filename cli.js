@@ -18,12 +18,12 @@ async function main() {
     switch (command) {
       case '-v':
       case '--version':
-        console.log(`Partum-React version: ${package.version}`);
+        process.stdout.write(`Partum-React version: ${package.version}\n`);
         break;
 
       case '-h':
       case '--help':
-        console.log(HelpMsg);
+        process.stdout.write(HelpMsg);
         break;
 
       case '-i':
@@ -40,10 +40,10 @@ async function main() {
       case '--component':
         name = args[1] ? args[1] : null;
         if (name === null) {
-          console.log("Component needs a name. 'partum -c [name]'");
+          process.stdout.write("Component needs a name. 'partum -c [name]'\n");
         } else {
           if (/^[A-Za-z]+$/.test(name) === false) {
-            console.log('Component name may not contain numbers or symbols');
+            process.stdout.write('Component name may not contain numbers or symbols\n');
           } else {
             const generator = new Generator();
             generator.generateComponent(args);
@@ -65,7 +65,7 @@ async function main() {
 
         const initializer = new Initializer(options, destination);
         await initializer.initializeProject();
-        console.log('initialized');
+        process.stdout.write(`initialized ${name} in ${destination}\n\nnext steps:\n\t'cd ${name}'\n\t'npm start'\n`);
     }
   } catch (error) {
     throw error;

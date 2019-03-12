@@ -1,22 +1,14 @@
 const path = require('path');
-const sys = require('child_process');
-const exec = sys.exec;
 
 const copy = require('ncp').ncp;
 const replace = require('replace-in-file');
 const rmdir = require('rimraf');
 
-async function sh(cmd) {
-  return new Promise(function(resolve, reject) {
-    exec(cmd, (err, stdout, stderr) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve({ stdout, stderr });
-      }
-    });
-  });
-}
+const {
+  shell
+} = require('./helper');
+
+const loading = require('./loading');
 
 module.exports = class Initializer {
   constructor(options, destination) {
@@ -66,8 +58,7 @@ module.exports = class Initializer {
           reject(err);
         } else {
           if (this.options.styleExt !== 'css') {
-            replace(
-              {
+            replace({
                 files: [
                   `${this.tempPath}/src/App.${srcPath}`,
                   `${this.tempPath}/src/index.${srcPath}`
@@ -129,16 +120,24 @@ module.exports = class Initializer {
 
   finalize() {
     return new Promise((resolve, reject) => {
+      process.stdout.write('finalizing project\n');
       copy(this.tempPath, this.destination, err => {
         if (err) {
           reject(err);
         } else {
+          process.stdout.write('cleaning up temporary files\n');
           rmdir(this.tempPath, async err => {
             if (err) {
               reject(err);
             } else {
               try {
-                await sh(`mkdir ${this.destination}/src/components`);
+                await shell(`mkdir ${this.destination}/src/components`);
+
+                process.stdout.write(`\nrunning npm install inside ${this.destination}\n`);
+                loading.startLoading();
+                await shell(`npm install --prefix ${this.destination}`, true);
+                loading.stopLoading();
+
                 resolve(true);
               } catch (err) {
                 reject(err)

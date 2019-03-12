@@ -8,11 +8,11 @@ const componentTemp = require('../boiler/templates/component');
 const funcComponentTemp = require('../boiler/templates/funcComponent');
 const styleTemp = require('../boiler/templates/style');
 
-const helper = require('./helper');
-
-function capitalize(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
+const {
+  ensureDirExists,
+  stateValue,
+  capitalize
+} = require('./helper');
 
 module.exports = class Generator {
   constructor() {
@@ -53,7 +53,7 @@ module.exports = class Generator {
       funcComponentTemp(name, componentName, this.options.styleExt) :
       componentTemp(name, componentName, this.options.styleExt, state);
 
-    helper.ensureDirExists(filePath);
+    ensureDirExists(filePath);
     fs.writeFile(
       path.join(filePath, fileName),
       content,
@@ -73,7 +73,7 @@ module.exports = class Generator {
       let processed = '';
       for (let i = 0; i < states.length; i += 1) {
         const split = states[i].split('=');
-        const value = helper.stateValue(split[1]);
+        const value = stateValue(split[1]);
         processed = `${processed}\n\t\t\t${split[0]}: ${value},`;
       }
       return `\n\t\tthis.state = {${processed}\n\t\t}`;
@@ -82,7 +82,7 @@ module.exports = class Generator {
 
   generateStyle(name, filePath) {
     const fileName = `${name}.${this.options.styleExt}`;
-    helper.ensureDirExists(filePath);
+    ensureDirExists(filePath);
     fs.writeFile(path.join(filePath, fileName), styleTemp(name), err => {
       if (err) {
         console.error(err.message);

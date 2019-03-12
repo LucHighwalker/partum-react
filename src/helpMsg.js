@@ -16,7 +16,7 @@ Usage:
 \t$ partum -c [component name] [state key]=[state value]
 \t Generates a new react component with options (default):
 \t  -f, --func, --functional (false): Generates a functional component instead of a class component.
-\t  [state key]=[state value]: Optional, adds states to the component. Strings must have their quotations escaped.
+\t  [state key]=[state value]: Optional, adds states to the component.
 
 
 `
