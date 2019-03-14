@@ -2,7 +2,6 @@
 
 I wasn't a fan of the react clis out there, so I made my own.
 
-
 # Installation
 
 ```

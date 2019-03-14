@@ -2,17 +2,18 @@
 
 New components can be generated using `partum --component [component name]`. There must be a component folder present in the projects src/ folder.
 By default, a class component will be generated. You can create functional components by passing in the `--func` option.
-To add states, pass in states in this format `[state key]=[state value]`. This can only be done with class components. 
+To add states, pass in states in this format `[state key]=[state value]`. This can only be done with class components.
 
 ### Example
 
 Using jsx and scss
 
 ```
-partum --component exampleComponent aState=\'this is a state\' anotherState=true oneMore=215
+partum --component exampleComponent aState='this is a state' anotherState=true oneMore=215
 ```
 
 Output
+
 ```/src/component/exampleComponent/exampleComponent.jsx
 import React, { Component } from 'react';
 import './exampleComponent.scss'
@@ -20,7 +21,7 @@ import './exampleComponent.scss'
 class ExampleComponent extends Component {
   constructor(props) {
     super(props);
-    
+
     this.state = {
 			aState: 'this is a state',
 			anotherState: true,
