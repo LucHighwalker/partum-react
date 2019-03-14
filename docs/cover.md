@@ -1,4 +1,4 @@
-<img class="main_logo" src="/media/icon.svg" data-origin="media/icon.svg" alt="logo">
+<img class="main_logo" src="partum-react/media/icon.svg" data-origin="media/icon.svg" alt="logo">
 
 # partum-react 
 [![npm version](https://badge.fury.io/js/partum-react.svg)](https://badge.fury.io/js/partum-react)
