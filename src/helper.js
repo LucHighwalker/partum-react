@@ -10,11 +10,12 @@ function ensureDirExists(filePath) {
 }
 
 function stateValue(value) {
-  if (value === true || value === false) {
-    return value;
-  } else if (/[A-Za-z]+/.test(value)) {
+  if (value === 'true' || value === 'false') {
+    return value === 'true' ? true : false;
+  } else if (/[^0-9]+/.test(value)) {
     return `'${value}'`
   }
+  return value
 }
 
 function capitalize(string) {
@@ -22,14 +23,17 @@ function capitalize(string) {
 }
 
 function shell(command, log = false, cb = null) {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     exec(command, (err, stdout, stderr) => {
       if (err) {
         reject(err);
       } else {
         if (cb) cb();
         if (log) process.stdout.write(`\n${stdout}\n\n`);
-        resolve({ stdout, stderr });
+        resolve({
+          stdout,
+          stderr
+        });
       }
     });
   });
