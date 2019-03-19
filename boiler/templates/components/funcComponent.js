@@ -1,5 +1,4 @@
-module.exports = (name, funcName, styleExt) => {
-  return `import React from 'react';
+module.exports = (name, funcName, styleExt) => `import React from 'react';
 import './${name}.${styleExt}';
 
 function ${funcName}(props) {
@@ -11,4 +10,3 @@ function ${funcName}(props) {
 }
 
 export default ${funcName};\n`;
-};

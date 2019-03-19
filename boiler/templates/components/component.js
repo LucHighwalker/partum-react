@@ -1,12 +1,11 @@
-module.exports = (name, className, styleExt, state = '') => {
-  return `import React, { Component } from 'react';
+module.exports = (name, className, styleExt, states = '') => `import React, { Component } from 'react';
 import './${name}.${styleExt}';
 
 class ${className} extends Component {
 \tconstructor(props) {
 \t\tsuper(props);
     
-\t\t// states go here.${state}
+\t\t// states go here.${states}
 \t}
 
 \trender() {
@@ -20,4 +19,3 @@ class ${className} extends Component {
 
 export default ${className};
 `;
-};

@@ -1,22 +1,22 @@
 const fs = require('fs');
 const path = require('path');
-
 const Options = require('./options');
+
 const optionsPath = path.join(process.cwd(), 'partum.json');
 
-const componentTemp = require('../boiler/templates/component');
-const funcComponentTemp = require('../boiler/templates/funcComponent');
-const styleTemp = require('../boiler/templates/style');
+const componentTemp = require('../boiler/templates/components/component');
+const funcComponentTemp = require('../boiler/templates/components/funcComponent');
+const styleTemp = require('../boiler/templates/components/style');
 
 const {
   ensureDirExists,
-  stateValue,
-  capitalize
+  processStates,
+  capitalize,
 } = require('./helper');
 
 module.exports = class Generator {
   constructor() {
-    const options = JSON.parse(JSON.stringify(require(optionsPath)));
+    const options = JSON.parse(JSON.stringify(require(optionsPath))); // eslint-disable-line
     this.options = new Options(options.name, options);
   }
 
@@ -26,7 +26,7 @@ module.exports = class Generator {
     const fileName = `${name}.${fileExt}`;
     const filePath = path.join(process.cwd(), `/src/components/${name}/`);
     const componentName = capitalize(name);
-    const states = [];
+    const rawStates = [];
 
     let functional = false;
 
@@ -40,50 +40,36 @@ module.exports = class Generator {
 
         default:
           if (/(=)/.test(args[i]) && !functional) {
-            states.push(args[i]);
+            rawStates.push(args[i]);
           } else {
             process.stdout.write('Invalid option(s) for component generation.\n');
           }
       }
     }
 
-    const state = this.processStates(states);
+    const states = processStates(rawStates);
 
-    const content = functional ?
-      funcComponentTemp(name, componentName, this.options.styleExt) :
-      componentTemp(name, componentName, this.options.styleExt, state);
+    const content = functional
+      ? funcComponentTemp(name, componentName, this.options.styleExt)
+      : componentTemp(name, componentName, this.options.styleExt, states);
 
     ensureDirExists(filePath);
     fs.writeFile(
       path.join(filePath, fileName),
       content,
-      err => {
+      (err) => {
         if (err) {
-          console.error(err.message);
+          throw err;
         }
         this.generateStyle(name, filePath);
-      }
+      },
     );
-  }
-
-  processStates(states) {
-    if (states.length === 0) {
-      return '';
-    } else {
-      let processed = '';
-      for (let i = 0; i < states.length; i += 1) {
-        const split = states[i].split('=');
-        const value = stateValue(split[1]);
-        processed = `${processed}\n\t\t\t${split[0]}: ${value},`;
-      }
-      return `\n\t\tthis.state = {${processed}\n\t\t}`;
-    }
   }
 
   generateStyle(name, filePath) {
     const fileName = `${name}.${this.options.styleExt}`;
     ensureDirExists(filePath);
-    fs.writeFile(path.join(filePath, fileName), styleTemp(name), err => {
+    fs.writeFile(path.join(filePath, fileName), styleTemp(name), (err) => {
       if (err) {
         throw err;
       }
