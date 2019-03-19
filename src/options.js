@@ -9,13 +9,15 @@ module.exports = class Options extends Object {
     this.jsx = true;
     this.redux = false;
     this.styleExt = 'css';
-    for (var attr in options) {
-      this[attr] = options[attr];
+
+    const keys = Object.keys(options);
+    for (let i = 0; i < keys.length; i += 1) {
+      this[keys[i]] = options[keys[i]];
     }
   }
 
   processArgs(args) {
-    for (let i = 1; i < args.length; i++) {
+    for (let i = 1; i < args.length; i += 1) {
       switch (args[i]) {
         case 'redux':
           this.redux = true;
@@ -37,7 +39,7 @@ module.exports = class Options extends Object {
           throw new Error(
             `Invalid option [${
               args[i]
-            }]. Use 'partum --help' for a list of options.`
+            }]. Use 'partum --help' for a list of options.`,
           );
       }
     }
@@ -47,16 +49,15 @@ module.exports = class Options extends Object {
     const currentDir = process.cwd();
     const currDirArr = currentDir.split('/');
     const currDirName = currDirArr[currDirArr.length - 1];
-    const filePath =
-      this.name === currDirName ? currentDir : `${currentDir}/${this.name}`;
+    const filePath = this.name === currDirName ? currentDir : `${currentDir}/${this.name}`;
 
     helper.ensureDirExists(filePath);
     fs.writeFile(
       `${filePath}/partum.json`,
       JSON.stringify(this, null, 2),
-      err => {
+      (err) => {
         if (err) throw err;
-      }
+      },
     );
   }
 };

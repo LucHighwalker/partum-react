@@ -4,6 +4,7 @@ const replace = require('replace-in-file');
 const rmdir = require('rimraf');
 
 const {
+  ensureDirExists,
   writeFile,
   shell,
 } = require('./helper');
@@ -15,6 +16,8 @@ const indexTemplate = require('../boiler/templates/src/index');
 
 const appStyle = require('../boiler/templates/styles/app');
 const indexStyle = require('../boiler/templates/styles/index');
+
+const rootReducer = require('../boiler/templates/redux/rootReducer');
 
 module.exports = class Initializer {
   constructor(options, destination) {
@@ -67,7 +70,22 @@ module.exports = class Initializer {
 
         await writeFile(`${this.tempPath}/src/App.${srcPath}`, appTemplate(styleExt, redux));
         await writeFile(`${this.tempPath}/src/index.${srcPath}`, indexTemplate(styleExt, redux));
-        resolve(true);
+
+        if (redux) {
+          ensureDirExists(`${this.tempPath}/src/redux/`);
+          ensureDirExists(`${this.tempPath}/src/redux/reducers`);
+          await writeFile(`${this.tempPath}/src/redux/reducers/rootReducer.js`, rootReducer());
+
+          copy(`${this.boilerPath}/reduxStore`, this.tempPath, (err) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(true);
+            }
+          });
+        } else {
+          resolve(true);
+        }
       } catch (error) {
         reject(error);
       }
@@ -84,14 +102,6 @@ module.exports = class Initializer {
       } catch (error) {
         reject(error);
       }
-      // const stylePath = `styles/${this.options.styleExt}`;
-      // copy(this.boilerPath + stylePath, this.tempPath, (err) => {
-      //   if (err) {
-      //     reject(err);
-      //   } else {
-      //     resolve(true);
-      //   }
-      // });
     });
   }
 
@@ -136,6 +146,10 @@ module.exports = class Initializer {
             } else {
               try {
                 await shell(`mkdir ${this.destination}/src/components`);
+
+                if (this.options.redux) {
+                  await shell(`mkdir ${this.destination}/src/redux/actions`);
+                }
 
                 process.stdout.write(
                   `\nrunning npm install inside ${this.destination}\n`,

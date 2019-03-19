@@ -4,6 +4,7 @@
 
 ### Other stuff ###
 teststuff/
+_temp/
 
 ### ArchLinuxPackages ###
 *.tar
