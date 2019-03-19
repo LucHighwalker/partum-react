@@ -13,6 +13,9 @@ const loading = require('./loading');
 const appTemplate = require('../boiler/templates/src/App');
 const indexTemplate = require('../boiler/templates/src/index');
 
+const appStyle = require('../boiler/templates/styles/app');
+const indexStyle = require('../boiler/templates/styles/index');
+
 module.exports = class Initializer {
   constructor(options, destination) {
     this.options = options;
@@ -72,15 +75,23 @@ module.exports = class Initializer {
   }
 
   addStyle() {
-    return new Promise((resolve, reject) => {
-      const stylePath = `styles/${this.options.styleExt}`;
-      copy(this.boilerPath + stylePath, this.tempPath, (err) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(true);
-        }
-      });
+    return new Promise(async (resolve, reject) => {
+      try {
+        const { styleExt } = this.options;
+        await writeFile(`${this.tempPath}/src/App.${styleExt}`, appStyle);
+        await writeFile(`${this.tempPath}/src/index.${styleExt}`, indexStyle);
+        resolve(true);
+      } catch (error) {
+        reject(error);
+      }
+      // const stylePath = `styles/${this.options.styleExt}`;
+      // copy(this.boilerPath + stylePath, this.tempPath, (err) => {
+      //   if (err) {
+      //     reject(err);
+      //   } else {
+      //     resolve(true);
+      //   }
+      // });
     });
   }
 
@@ -99,7 +110,7 @@ module.exports = class Initializer {
             from: /(---name---)/gm,
             to: this.options.name,
           },
-          (err, _) => { // eslint-disable-line
+            (err, _) => { // eslint-disable-line
             if (err) {
               reject(err);
             } else {
