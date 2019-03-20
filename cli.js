@@ -50,6 +50,19 @@ async function main() {
         }
         break;
 
+      case '-a':
+      case '--action':
+        name = args[1] ? args[1] : null;
+        if (name === null) {
+          process.stdout.write("Action needs a name. 'partum -a [name]'\n");
+        } else if (/^[A-Za-z]+$/.test(name) === false) {
+          process.stdout.write('Action name may not contain numbers or symbols\n');
+        } else {
+          const generator = new Generator();
+          generator.generateAction(args);
+        }
+        break;
+
       default:
         if (command[0] === '-') {
           throw new Error(

@@ -7,6 +7,7 @@ const optionsPath = path.join(process.cwd(), 'partum.json');
 const componentTemp = require('../boiler/templates/components/component');
 const funcComponentTemp = require('../boiler/templates/components/funcComponent');
 const styleTemp = require('../boiler/templates/components/style');
+const actionTemp = require('../boiler/templates/redux/action');
 
 const {
   ensureDirExists,
@@ -20,11 +21,44 @@ module.exports = class Generator {
     this.options = new Options(options.name, options);
   }
 
+  /* eslint-disable */
+  generateAction(args) {
+    const name = args[1];
+    const filePath = path.join(process.cwd(), '/src/redux/actions/');
+    const fileName = args[2] ? args[2] : 'actions.js';
+    const fullPath = path.join(filePath, fileName);
+    const reducerName = args[2] ? args[2] : 'reducer.js';
+    const action = actionTemp(name, capitalize(name));
+
+    fs.stat(fullPath, (err, _) => {
+      if (err == null) {
+        fs.appendFile(fullPath, `\n${action}`, (err) => {
+          if (err) {
+            throw err;
+          } else {
+            process.stdout.write(`Generated action '${name}'.\n`);
+          }
+        });
+      } else if (err.code === 'ENOENT') {
+        fs.writeFile(fullPath, action, (err) => {
+          if (err) {
+            throw err;
+          } else {
+            process.stdout.write(`Generated action '${name}'.\n`);
+          }
+        });
+      } else {
+        throw err;
+      }
+    });
+  }
+  /* eslint-enable */
+
   generateComponent(args) {
     const name = args[1];
     const fileExt = this.options.jsx ? 'jsx' : 'js';
-    const fileName = `${name}.${fileExt}`;
     const filePath = path.join(process.cwd(), `/src/components/${name}/`);
+    const fileName = `${name}.${fileExt}`;
     const componentName = capitalize(name);
     const rawStates = [];
 
@@ -60,8 +94,9 @@ module.exports = class Generator {
       (err) => {
         if (err) {
           throw err;
+        } else {
+          this.generateStyle(name, filePath);
         }
-        this.generateStyle(name, filePath);
       },
     );
   }
@@ -72,8 +107,9 @@ module.exports = class Generator {
     fs.writeFile(path.join(filePath, fileName), styleTemp(name), (err) => {
       if (err) {
         throw err;
+      } else {
+        process.stdout.write(`Generated ${name} component.\n`);
       }
-      process.stdout.write(`Generated ${name} component.\n`);
     });
   }
 };
