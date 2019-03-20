@@ -25,9 +25,9 @@ module.exports = class Generator {
   generateAction(args) {
     const name = args[1];
     const filePath = path.join(process.cwd(), '/src/redux/actions/');
-    const fileName = args[2] ? args[2] : 'actions.js';
+    const fileName = args[2] ? `${args[2]}.js` : 'actions.js';
     const fullPath = path.join(filePath, fileName);
-    const reducerName = args[2] ? args[2] : 'reducer.js';
+    const reducerName = args[3] ? `${args[3]}.js` : 'reducer.js';
     const action = actionTemp(name, capitalize(name));
 
     fs.stat(fullPath, (err, _) => {
