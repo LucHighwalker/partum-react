@@ -59,5 +59,9 @@ const mapStateToProps = state => ({
 \t...state
 });
 
-export default connect(mapStateToProps)(App);
+const mapDispatchToProps = dispatch => ({
+\t// your dispatches go here.
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
 `);
