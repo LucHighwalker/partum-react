@@ -12,7 +12,7 @@ Using jsx and scss
 partum --component exampleComponent aState='this is a state' anotherState=true oneMore=215
 ```
 
-Output
+Output:
 
 ```/src/component/exampleComponent/exampleComponent.jsx
 import React, { Component } from 'react';
