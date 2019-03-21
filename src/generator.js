@@ -28,22 +28,26 @@ module.exports = class Generator {
   /* eslint-disable class-methods-use-this */
   async generateAction(args) {
     try {
-      const actionName = args[1];
-      const actionType = upperCase(actionName);
-      const actionFileDir = path.join(process.cwd(), '/src/redux/actions/');
-      const actionFile = args[2] ? `${args[2]}.js` : 'actions.js';
-      const actionPath = path.join(actionFileDir, actionFile);
+      if (this.options.redux) {
+        const actionName = args[1];
+        const actionType = upperCase(actionName);
+        const actionFileDir = path.join(process.cwd(), '/src/redux/actions/');
+        const actionFile = args[2] ? `${args[2]}.js` : 'actions.js';
+        const actionPath = path.join(actionFileDir, actionFile);
 
-      const reducerFileDir = path.join(process.cwd(), '/src/redux/reducers/');
-      const reducerName = args[3] ? args[3] : 'reducer';
-      const reducerFile = `${reducerName}.js`;
-      const reducerPath = path.join(reducerFileDir, reducerFile);
+        const reducerFileDir = path.join(process.cwd(), '/src/redux/reducers/');
+        const reducerName = args[3] ? args[3] : 'reducer';
+        const reducerFile = `${reducerName}.js`;
+        const reducerPath = path.join(reducerFileDir, reducerFile);
 
-      const action = actionTemp(actionName, actionType);
-      await this.createAction(actionPath, action);
-      await this.createReducer(reducerPath, reducerName, actionType);
+        const action = actionTemp(actionName, actionType);
+        await this.createAction(actionPath, action);
+        await this.createReducer(reducerPath, reducerName, actionType);
 
-      process.stdout.write(`Generated action '${actionName}'.\n`);
+        process.stdout.write(`Generated action '${actionName}'.\n`);
+      } else {
+        process.stdout.write('Cannot create action inside a non-redux project.\n');
+      }
     } catch (error) {
       throw error;
     }
