@@ -174,8 +174,8 @@ module.exports = class Generator {
     const states = processStates(rawStates);
 
     const content = functional
-      ? funcComponentTemp(name, componentName, this.options.styleExt)
-      : componentTemp(name, componentName, this.options.styleExt, states);
+      ? funcComponentTemp(name, componentName, this.options.styleExt, this.options.redux)
+      : componentTemp(name, componentName, this.options.styleExt, states, this.options.redux);
 
     ensureDirExists(filePath);
     fs.writeFile(
