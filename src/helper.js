@@ -26,6 +26,10 @@ function capitalize(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+function upperCase(string) {
+  return string.toUpperCase();
+}
+
 function processStates(states) {
   if (states.length === 0) {
     return '';
@@ -72,6 +76,7 @@ module.exports = {
   ensureDirExists,
   stateValue,
   capitalize,
+  upperCase,
   processStates,
   writeFile,
   shell,

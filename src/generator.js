@@ -8,11 +8,13 @@ const componentTemp = require('../boiler/templates/components/component');
 const funcComponentTemp = require('../boiler/templates/components/funcComponent');
 const styleTemp = require('../boiler/templates/components/style');
 const actionTemp = require('../boiler/templates/redux/action');
+const reducerTemp = require('../boiler/templates/redux/reducer');
 
 const {
   ensureDirExists,
   processStates,
   capitalize,
+  upperCase,
 } = require('./helper');
 
 module.exports = class Generator {
@@ -21,38 +23,90 @@ module.exports = class Generator {
     this.options = new Options(options.name, options);
   }
 
-  /* eslint-disable */
-  generateAction(args) {
-    const name = args[1];
-    const filePath = path.join(process.cwd(), '/src/redux/actions/');
-    const fileName = args[2] ? `${args[2]}.js` : 'actions.js';
-    const fullPath = path.join(filePath, fileName);
-    const reducerName = args[3] ? `${args[3]}.js` : 'reducer.js';
-    const action = actionTemp(name, capitalize(name));
+  /* eslint-disable class-methods-use-this */
+  async generateAction(args) {
+    try {
+      const actionName = args[1];
+      const actionType = upperCase(actionName);
+      const actionFileDir = path.join(process.cwd(), '/src/redux/actions/');
+      const actionFile = args[2] ? `${args[2]}.js` : 'actions.js';
+      const actionPath = path.join(actionFileDir, actionFile);
 
-    fs.stat(fullPath, (err, _) => {
-      if (err == null) {
-        fs.appendFile(fullPath, `\n${action}`, (err) => {
-          if (err) {
-            throw err;
-          } else {
-            process.stdout.write(`Generated action '${name}'.\n`);
-          }
-        });
-      } else if (err.code === 'ENOENT') {
-        fs.writeFile(fullPath, action, (err) => {
-          if (err) {
-            throw err;
-          } else {
-            process.stdout.write(`Generated action '${name}'.\n`);
-          }
-        });
-      } else {
-        throw err;
-      }
+      const reducerFileDir = path.join(process.cwd(), '/src/redux/reducers/');
+      const reducerFile = args[3] ? `${args[3]}.js` : 'reducer.js';
+      const reducerPath = path.join(reducerFileDir, reducerFile);
+
+      const action = actionTemp(actionName, actionType);
+      await this.createAction(actionPath, action);
+      await this.createReducer(reducerPath, actionType);
+
+      process.stdout.write(`Generated action '${actionName}'.\n`);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  createAction(actionPath, action) {
+    return new Promise((resolve, reject) => {
+      fs.stat(actionPath, (err, _) => {
+        if (err == null) {
+          fs.appendFile(actionPath, `\n${action}`, (err) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(true);
+            }
+          });
+        } else if (err.code === 'ENOENT') {
+          fs.writeFile(actionPath, action, (err) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(true);
+            }
+          });
+        } else {
+          reject(err);
+        }
+      });
     });
   }
-  /* eslint-enable */
+
+  createReducer(reducerPath, actionType) {
+    return new Promise((resolve, reject) => {
+      fs.stat(reducerPath, (err, _) => {
+        if (err == null) {
+          fs.readFile(reducerPath, 'utf8', (err, data) => {
+            if (err) {
+              reject(err);
+            } else {
+              const matches = data.match(/(case '[A-Za-z_-]+':\s+return (state|{\s+([a-zA-Z]+: [a-zA-Z0-9+\-_/*\s']+,\s+)+}))/gm);
+              const prevActions = matches.length > 0 ? `\n\t\t${matches.join('\n\n\t\t')}\n\n` : '';
+              const reducer = reducerTemp(actionType, prevActions);
+              fs.writeFile(reducerPath, reducer, (err) => {
+                if (err) {
+                  reject(err);
+                } else {
+                  resolve(true);
+                }
+              });
+            }
+          });
+        } else if (err.code === 'ENOENT') {
+          const reducer = reducerTemp(actionType);
+          fs.writeFile(reducerPath, reducer, (err) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(true);
+            }
+          });
+        } else {
+          reject(err);
+        }
+      });
+    });
+  }
 
   generateComponent(args) {
     const name = args[1];
@@ -112,4 +166,5 @@ module.exports = class Generator {
       }
     });
   }
+/* eslint-enable class-methods-use-this */
 };
