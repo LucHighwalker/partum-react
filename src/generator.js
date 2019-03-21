@@ -9,6 +9,7 @@ const funcComponentTemp = require('../boiler/templates/components/funcComponent'
 const styleTemp = require('../boiler/templates/components/style');
 const actionTemp = require('../boiler/templates/redux/action');
 const reducerTemp = require('../boiler/templates/redux/reducer');
+const rootReducerTemp = require('../boiler/templates/redux/rootReducer');
 
 const {
   ensureDirExists,
@@ -21,6 +22,7 @@ module.exports = class Generator {
   constructor() {
     const options = JSON.parse(JSON.stringify(require(optionsPath))); // eslint-disable-line
     this.options = new Options(options.name, options);
+    this.rootReducerPath = path.join(process.cwd(), '/src/redux/reducers/rootReducer.js');
   }
 
   /* eslint-disable class-methods-use-this */
@@ -33,12 +35,13 @@ module.exports = class Generator {
       const actionPath = path.join(actionFileDir, actionFile);
 
       const reducerFileDir = path.join(process.cwd(), '/src/redux/reducers/');
-      const reducerFile = args[3] ? `${args[3]}.js` : 'reducer.js';
+      const reducerName = args[3] ? args[3] : 'reducer';
+      const reducerFile = `${reducerName}.js`;
       const reducerPath = path.join(reducerFileDir, reducerFile);
 
       const action = actionTemp(actionName, actionType);
       await this.createAction(actionPath, action);
-      await this.createReducer(reducerPath, actionType);
+      await this.createReducer(reducerPath, reducerName, actionType);
 
       process.stdout.write(`Generated action '${actionName}'.\n`);
     } catch (error) {
@@ -72,7 +75,7 @@ module.exports = class Generator {
     });
   }
 
-  createReducer(reducerPath, actionType) {
+  createReducer(reducerPath, reducerName, actionType) {
     return new Promise((resolve, reject) => {
       fs.stat(reducerPath, (err, _) => {
         if (err == null) {
@@ -98,7 +101,31 @@ module.exports = class Generator {
             if (err) {
               reject(err);
             } else {
-              resolve(true);
+              fs.readFile(this.rootReducerPath, 'utf8', (err, data) => {
+                if (err) {
+                  reject(err);
+                } else {
+                  const newImport = `import ${reducerName} from './${reducerName}';`;
+                  let rawImports = data.match(/(import [A-Za-z_-]+ from '.\/[A-Za-z]+(.js)?';?)/gm);
+                  if (rawImports !== null) {
+                    rawImports.push(newImport);
+                  } else {
+                    rawImports = [newImport];
+                  }
+                  const reducers = this.getReducers(rawImports);
+
+                  const imports = `\n${rawImports.join('\n')}`;
+
+                  const rootReducer = rootReducerTemp(imports, reducers);
+                  fs.writeFile(this.rootReducerPath, rootReducer, (err) => {
+                    if (err) {
+                      reject(err);
+                    } else {
+                      resolve(true);
+                    }
+                  });
+                }
+              });
             }
           });
         } else {
@@ -106,6 +133,15 @@ module.exports = class Generator {
         }
       });
     });
+  }
+
+  getReducers(imports) {
+    let reducers = '';
+    for (let i = 0; i < imports.length; i += 1) {
+      const split = imports[i].split(' ');
+      reducers = `${reducers}\n\t${split[1]},`;
+    }
+    return `${reducers}\n`;
   }
 
   generateComponent(args) {
@@ -166,5 +202,5 @@ module.exports = class Generator {
       }
     });
   }
-/* eslint-enable class-methods-use-this */
+  /* eslint-enable class-methods-use-this */
 };

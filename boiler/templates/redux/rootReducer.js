@@ -1,5 +1,5 @@
-module.exports = (reducerImports = '', reducers = '') => `import {
+module.exports = (imports = '', reducers = '') => `import {
 \tcombineReducers
-} from 'redux';${reducerImports}
+} from 'redux';${imports}
 
 export default combineReducers({${reducers}});`;
