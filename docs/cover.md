@@ -6,8 +6,7 @@
 > An angular like cli for react.
 
 - component generation with states
-- supports redux 
-<small>action/reducer generation coming soon</small>
+- supports redux
 - supports sass
 
 [GitHub](https://github.com/LucHighwalker/partum-react/)
