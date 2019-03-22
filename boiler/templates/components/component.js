@@ -43,7 +43,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-\t// your dispatches go here.
+\t// action: () => dispatch(action())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(${className});
