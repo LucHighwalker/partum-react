@@ -1,6 +1,6 @@
 **(WIP)**
 
-I wasn't a fan of the react clis out there, so I made my own.
+?> Partum is a work in progress. Expect bugs and things to not work as expected.
 
 # Installation
 
