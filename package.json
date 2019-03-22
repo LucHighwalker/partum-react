@@ -1,7 +1,7 @@
 {
   "name": "partum-react",
   "version": "0.1.2",
-  "description": "I wasn't a huge fan of react cli's out there. So I made my own.",
+  "description": "I wasn't a fan of the react clis out there, so I made my own.",
   "repository": {
     "type": "git",
     "url": "https://github.com/LucHighwalker/partum-react"

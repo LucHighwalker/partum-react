@@ -28,7 +28,9 @@ export const aNewAction = () => dispatch => {
 export default (state = {}, action) => {
 	switch (action.type) {
 		case 'ANEWACTION':
-			return state
+			return {
+				result: action.payload;
+			}
 
 		default:
 			return state
