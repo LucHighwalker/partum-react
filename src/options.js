@@ -9,6 +9,7 @@ module.exports = class Options extends Object {
     this.jsx = true;
     this.redux = false;
     this.styleExt = 'css';
+    this.silent = false;
 
     const keys = Object.keys(options);
     for (let i = 0; i < keys.length; i += 1) {
@@ -33,6 +34,11 @@ module.exports = class Options extends Object {
 
         case 'sass':
           this.styleExt = 'sass';
+          break;
+
+        case '-s':
+        case '--silent':
+          this.silent = true;
           break;
 
         default:

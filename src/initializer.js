@@ -6,6 +6,7 @@ const rmdir = require('rimraf');
 const {
   ensureDirExists,
   writeFile,
+  npmInstall,
   shell,
 } = require('./helper');
 
@@ -154,14 +155,18 @@ module.exports = class Initializer {
                 process.stdout.write(
                   `\nrunning npm install inside ${this.destination}\n`,
                 );
-                loading.startLoading();
-                await shell(
-                  `npm install --prefix ${this.destination}`,
-                  true,
-                  () => loading.stopLoading(),
-                );
 
-                resolve(true);
+                if (this.options.silent) {
+                  loading.startLoading();
+                  await shell(
+                    `npm install --prefix ${this.destination}`,
+                    true,
+                    () => loading.stopLoading(),
+                  );
+                } else {
+                  npmInstall(this.destination, () => resolve(true));
+                }
+
               } catch (err) { // eslint-disable-line
                 reject(err);
               }

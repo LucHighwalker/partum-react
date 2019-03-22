@@ -10,3 +10,5 @@ This supports the following options input after the project name and separated b
   scss     (css):       Uses scss files for styling.
   sass     (css):       Uses sass files for styling.
 ```
+
+?> By default, partum will output data from `npm install`. This can be muted by passing in the option `-s` or `--silent`.

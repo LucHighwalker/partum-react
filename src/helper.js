@@ -3,6 +3,7 @@ const sys = require('child_process');
 
 const {
   exec,
+  spawn,
 } = sys;
 
 function ensureDirExists(filePath) {
@@ -55,13 +56,25 @@ function writeFile(path, data) {
   });
 }
 
+function npmInstall(path, cb = null) {
+  const install = spawn('npm', ['install', '--loglevel=info', '--no-spin', '--prefix', path]);
+
+  install.stdout.on('data', data => process.stdout.write(data));
+
+  install.stderr.on('data', data => process.stderr.write(data));
+
+  install.on('exit', () => {
+    if (cb) cb();
+  });
+}
+
 function shell(command, log = false, cb = null) {
   return new Promise(((resolve, reject) => {
     exec(command, (err, stdout, stderr) => {
       if (err) {
         reject(err);
       } else {
-        if (cb) cb();
+        if (cb) cb(stdout);
         if (log) process.stdout.write(`\n${stdout}\n\n`);
         resolve({
           stdout,
@@ -79,5 +92,6 @@ module.exports = {
   upperCase,
   processStates,
   writeFile,
+  npmInstall,
   shell,
 };
