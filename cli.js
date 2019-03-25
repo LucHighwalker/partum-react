@@ -73,9 +73,9 @@ async function main() {
         name = command;
         destination = `${process.cwd()}/${name}`;
         options = new Options(name);
-        options.processArgs(args);
 
-        const initializer = new Initializer(options, destination); // eslint-disable-line
+        let silent = options.processArgs(args); // eslint-disable-line
+        const initializer = new Initializer(options, destination, silent); // eslint-disable-line
         await initializer.initializeProject();
         process.stdout.write(`initialized ${name} in ${destination}\n\nnext steps:\n\t'cd ${name}'\n\t'npm start'\n`);
     }

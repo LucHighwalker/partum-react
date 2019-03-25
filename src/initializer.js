@@ -21,11 +21,13 @@ const indexStyle = require('../boiler/templates/styles/index');
 const rootReducer = require('../boiler/templates/redux/rootReducer');
 
 module.exports = class Initializer {
-  constructor(options, destination) {
+  constructor(options, destination, silent = false) {
     this.options = options;
     this.boilerPath = path.join(__dirname, '../boiler/');
     this.tempPath = path.join(__dirname, '../_temp/');
     this.destination = destination;
+
+    this.silent = silent;
 
     rmdir(this.tempPath, (err) => {
       if (err) throw err;
@@ -165,7 +167,7 @@ module.exports = class Initializer {
                   `\nrunning npm install inside ${this.destination}\n`,
                 );
 
-                if (this.options.silent) {
+                if (this.silent) {
                   loading.startLoading();
                   await shell(
                     `npm install --prefix ${this.destination}`,
