@@ -5,7 +5,7 @@ This supports the following options input after the project name and separated b
 ```
   option   (default):   Description.
 ------------------------------------------------------------------------------
-  redux    (false):     Enables redux support. (Currently in development)
+  redux    (false):     Enables redux support.
   js       (false):     Uses js files instead of jsx... But why would you?
   scss     (css):       Uses scss files for styling.
   sass     (css):       Uses sass files for styling.

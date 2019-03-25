@@ -73,17 +73,26 @@ module.exports = class Initializer {
         await writeFile(`${this.tempPath}/src/index.${srcPath}`, indexTemplate(styleExt, redux));
 
         if (redux) {
-          ensureDirExists(`${this.tempPath}/src/redux/`);
-          ensureDirExists(`${this.tempPath}/src/redux/reducers`);
-          await writeFile(`${this.tempPath}/src/redux/reducers/rootReducer.js`, rootReducer());
+          ensureDirExists(path.join(this.tempPath,
+            this.options.reduxPath));
 
-          copy(`${this.boilerPath}/reduxStore`, this.tempPath, (err) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve(true);
-            }
-          });
+          ensureDirExists(path.join(this.tempPath,
+            this.options.reduxPath,
+            this.options.reducerPath));
+
+          await writeFile(path.join(this.tempPath,
+            this.options.reduxPath,
+            this.options.reducerPath,
+            'rootReducer.js'), rootReducer());
+
+          copy(`${this.boilerPath}/reduxStore`, path.join(this.tempPath, this.options.reduxPath),
+            (err) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(true);
+              }
+            });
         } else {
           resolve(true);
         }
@@ -146,10 +155,10 @@ module.exports = class Initializer {
               reject(err);
             } else {
               try {
-                await shell(`mkdir ${this.destination}/src/components`);
+                await shell(`mkdir ${path.join(this.destination, this.options.componentPath)}`);
 
                 if (this.options.redux) {
-                  await shell(`mkdir ${this.destination}/src/redux/actions`);
+                  await shell(`mkdir ${path.join(this.destination, this.options.reduxPath, this.options.actionPath)}`);
                 }
 
                 process.stdout.write(

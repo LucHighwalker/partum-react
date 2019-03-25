@@ -9,11 +9,20 @@ module.exports = class Options extends Object {
     this.jsx = true;
     this.redux = false;
     this.styleExt = 'css';
+    this.componentFolders = true;
+    this.componentPath = '/src/components/';
+
     this.silent = false;
 
     const keys = Object.keys(options);
     for (let i = 0; i < keys.length; i += 1) {
       this[keys[i]] = options[keys[i]];
+    }
+
+    if (this.redux) {
+      this.reduxPath = '/src/redux/';
+      this.actionPath = '/actions/';
+      this.reducerPath = '/reducers/';
     }
   }
 
@@ -22,6 +31,9 @@ module.exports = class Options extends Object {
       switch (args[i]) {
         case 'redux':
           this.redux = true;
+          this.reduxPath = '/src/redux/';
+          this.actionPath = '/actions/';
+          this.reducerPath = '/reducers/';
           break;
 
         case 'js':
@@ -56,11 +68,13 @@ module.exports = class Options extends Object {
     const currDirArr = currentDir.split('/');
     const currDirName = currDirArr[currDirArr.length - 1];
     const filePath = this.name === currDirName ? currentDir : `${currentDir}/${this.name}`;
+    const options = this;
+    options.silent = undefined;
 
     helper.ensureDirExists(filePath);
     fs.writeFile(
       `${filePath}/partum.json`,
-      JSON.stringify(this, null, 2),
+      JSON.stringify(options, null, 2),
       (err) => {
         if (err) throw err;
       },

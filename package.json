@@ -1,6 +1,6 @@
 {
   "name": "partum-react",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "description": "I wasn't a fan of the react clis out there, so I made my own.",
   "repository": {
     "type": "git",

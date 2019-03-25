@@ -29,13 +29,16 @@ module.exports = class Generator {
   async generateAction(args) {
     try {
       if (this.options.redux) {
+        const actionFileDir = path.join(process.cwd(),
+          this.options.reduxPath, this.options.actionPath);
+        const reducerFileDir = path.join(process.cwd(),
+          this.options.reduxPath, this.options.reducerPath);
+
         const actionName = args[1];
         const actionType = upperCase(actionName);
-        const actionFileDir = path.join(process.cwd(), '/src/redux/actions/');
         const actionFile = args[2] ? `${args[2]}.js` : 'actions.js';
         const actionPath = path.join(actionFileDir, actionFile);
 
-        const reducerFileDir = path.join(process.cwd(), '/src/redux/reducers/');
         const reducerName = args[3] ? args[3] : 'reducer';
         const reducerFile = `${reducerName}.js`;
         const reducerPath = path.join(reducerFileDir, reducerFile);
@@ -151,7 +154,10 @@ module.exports = class Generator {
   generateComponent(args) {
     const name = args[1];
     const fileExt = this.options.jsx ? 'jsx' : 'js';
-    const filePath = path.join(process.cwd(), `/src/components/${name}/`);
+    const filePath = this.options.componentFolders
+      ? path.join(process.cwd(), this.options.componentPath, name)
+      : path.join(process.cwd(), this.options.componentPath);
+
     const fileName = `${name}.${fileExt}`;
     const componentName = capitalize(name);
     const rawStates = [];
