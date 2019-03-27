@@ -10,8 +10,6 @@ const {
   shell,
 } = require('./helper');
 
-const loading = require('./loading');
-
 const appTemplate = require('../boiler/templates/src/App');
 const indexTemplate = require('../boiler/templates/src/index');
 
@@ -163,20 +161,16 @@ module.exports = class Initializer {
                   await shell(`mkdir ${path.join(this.destination, this.options.reduxPath, this.options.actionPath)}`);
                 }
 
+                await shell(`git -C ${this.destination} init`);
+                await shell(`git -C ${this.destination} add .`);
+                await shell(`git -C ${this.destination} commit -m '- Generated using Partum-React'`);
+
                 process.stdout.write(
                   `\nrunning npm install inside ${this.destination}\n`,
                 );
+                await npmInstall(this.destination, this.silent);
 
-                if (this.silent) {
-                  loading.startLoading();
-                  await shell(
-                    `npm install --prefix ${this.destination}`,
-                    true,
-                    () => loading.stopLoading(),
-                  );
-                } else {
-                  npmInstall(this.destination, () => resolve(true));
-                }
+                resolve(true);
 
               } catch (err) { // eslint-disable-line
                 reject(err);
