@@ -3,7 +3,7 @@
 # partum-react 
 [![npm version](https://badge.fury.io/js/partum-react.svg)](https://badge.fury.io/js/partum-react)
 
-> An angular like cli for react.
+> An Angular-esque cli for React.
 
 - component generation with states
 - supports redux

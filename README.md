@@ -1,6 +1,10 @@
 **(WIP)**
 
-I wasn't a fan of the react clis out there, so I made my own.
+**An Angular-esque cli for React.**
+
+- component generation with states
+- supports redux
+- supports sass
 
 # Installation
 
