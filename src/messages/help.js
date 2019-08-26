@@ -1,11 +1,12 @@
 module.exports = `
 
 Commands:
-\t-h, --help:       Displays this help message.
-\t-v, --version:    Displays the current installed version of partum-react.
-\t-i, --init:       Initializes partum in a current react project directory.
-\t-c, --component:  Create a new react component.
 \t-a, --action:     Create a new action in a redux enabled project. 
+\t-c, --component:  Create a new react component.
+\t-d, --docs:       Opens documentation(https://luchighwalker.github.io/partum-react/#/).
+\t-h, --help:       Displays this help message.
+\t-i, --init:       Initializes partum in a current react project directory.
+\t-v, --version:    Displays the current installed version of partum-react.
 
 Usage:
  $ partum [project name]

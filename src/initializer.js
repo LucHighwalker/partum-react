@@ -163,7 +163,7 @@ module.exports = class Initializer {
 
                 await shell(`git -C ${this.destination} init`);
                 await shell(`git -C ${this.destination} add .`);
-                await shell(`git -C ${this.destination} commit -m '- Generated using Partum-React'`);
+                await shell(`git -C ${this.destination} commit -m 'Initialized with Partum-React'`);
 
                 process.stdout.write(
                   `\nrunning npm install inside ${this.destination}\n`,
