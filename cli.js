@@ -72,10 +72,10 @@ const main = async () => {
       case '-v':
       case '--version':
         shell('npm view partum-react version', false, (version) => {
-          if (pkg.version !== version) {
-            process.stdout.write(`Partum-React version(outdated): ${pkg.version}\navailable version: ${version}`);
+          if (pkg.version !== version.trim()) {
+            process.stdout.write(`Partum-React version(outdated): ${pkg.version}\navailable version: ${version}\n`);
           } else {
-            process.stdout.write(`Partum-React version(up to date): ${pkg.version}`);
+            process.stdout.write(`Partum-React version(up to date): ${pkg.version}\n`);
           }
         });
         break;
@@ -88,7 +88,7 @@ const main = async () => {
         }
 
         await shell('npm view partum-react version', false, (version) => {
-          if (pkg.version !== version) {
+          if (pkg.version !== version.trim()) {
             process.stdout.write(UpdateMsg(pkg.version, version));
           }
         });
