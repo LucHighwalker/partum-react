@@ -2,6 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const Options = require('./options');
 
+const ErrorHandler = require('./errorHandler');
+
 const optionsPath = path.join(process.cwd(), 'partum.json');
 
 const componentTemp = require('../boiler/templates/components/component');
@@ -52,7 +54,7 @@ module.exports = class Generator {
         process.stdout.write('Cannot create action inside a non-redux project.\n');
       }
     } catch (error) {
-      throw error;
+      ErrorHandler(error);
     }
   }
 

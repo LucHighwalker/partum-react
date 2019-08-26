@@ -8,6 +8,7 @@
 - component generation with states
 - supports redux
 - supports sass
+- includes react-scripts
 
 [GitHub](https://github.com/LucHighwalker/partum-react/)
 [Get Started](#installation)

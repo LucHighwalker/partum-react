@@ -5,6 +5,7 @@
 - component generation with states
 - supports redux
 - supports sass
+- includes react-scripts
 
 # Installation
 

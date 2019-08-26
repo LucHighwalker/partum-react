@@ -7,6 +7,8 @@ const HelpMsg = require('./src/helpMsg');
 const Initializer = require('./src/initializer');
 const Options = require('./src/options');
 
+const ErrorHandler = require('./src/errorHandler');
+
 const [, , ...args] = process.argv;
 
 async function main() {
@@ -80,12 +82,12 @@ async function main() {
         process.stdout.write(`initialized ${name} in ${destination}\n\nnext steps:\n\t'cd ${name}'\n\t'npm start'\n`);
     }
   } catch (error) {
-    throw error;
+    ErrorHandler(error);
   }
 }
 
 try {
   main();
 } catch (error) {
-  throw error;
+  ErrorHandler(error);
 }
