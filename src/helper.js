@@ -3,19 +3,13 @@ const sys = require('child_process');
 
 const loading = require('./loading');
 
-const {
-  exec,
-  spawn,
-} = sys;
+const { exec, spawn } = sys;
 
-function ensureDirExists(filePath) {
-  if (fs.existsSync(filePath)) {
-    return;
-  }
-  fs.mkdirSync(filePath);
-}
+const capitalize = string => string.charAt(0).toUpperCase() + string.slice(1);
 
-function stateValue(value) {
+const upperCase = string => string.toUpperCase();
+
+const stateValue = (value) => {
   if (value === 'true' || value === 'false') {
     return value === 'true';
   }
@@ -23,96 +17,77 @@ function stateValue(value) {
     return `'${value}'`;
   }
   return value;
-}
+};
 
-function capitalize(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
-function upperCase(string) {
-  return string.toUpperCase();
-}
-
-function processStates(states) {
+const processStates = (states) => {
   if (states.length === 0) {
     return '';
   }
   let processed = '';
-  for (let i = 0; i < states.length; i += 1) {
-    const split = states[i].split('=');
-    const value = stateValue(split[1]);
-    processed = `${processed}\n\t\t\t${split[0]}: ${value},`;
-  }
+  states.forEach((state) => {
+    const split = state.split('=');
+    processed = `${processed}\n\t\t\t${split[0]}: ${stateValue(split[1])},`;
+  });
   return `\n\t\tthis.state = {${processed}\n\t\t}`;
-}
+};
 
-function writeFile(path, data) {
-  return new Promise((resolve, reject) => {
-    fs.writeFile(path, data, (err) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(true);
-      }
+const ensureDirExists = (filePath) => {
+  if (fs.existsSync(filePath) === false) {
+    fs.mkdirSync(filePath);
+  }
+};
+
+const writeFile = async (path, data) => {
+  fs.writeFile(path, data, (err) => {
+    if (err) throw err;
+    return true;
+  });
+};
+
+const shell = (command, log = false, cb = null) => new Promise((resolve, reject) => {
+  exec(command, (err, stdout, stderr) => {
+    if (err) reject(err);
+    if (cb) cb(stdout);
+    if (log) process.stdout.write(`\n${stdout}\n\n`);
+    resolve({
+      stdout,
+      stderr,
     });
   });
-}
+});
 
-function shell(command, log = false, cb = null) {
-  return new Promise(((resolve, reject) => {
-    exec(command, (err, stdout, stderr) => {
-      if (err) {
-        reject(err);
-      } else {
-        if (cb) cb(stdout);
-        if (log) process.stdout.write(`\n${stdout}\n\n`);
-        resolve({
-          stdout,
-          stderr,
-        });
-      }
-    });
-  }));
-}
-
-function npmInstall(path, silent, cb = null) {
-  return new Promise(async (resolve, reject) => {
-    if (silent) {
-      try {
-        loading.startLoading();
-        await shell(
-          `npm install --prefix ${path}`,
-          true,
-          () => {
-            loading.stopLoading();
-          },
-        );
-        resolve(true);
-      } catch (err) {
-        reject(err);
-      }
-    } else {
-      const install = spawn('npm', ['install', '--loglevel=info', '--no-spin', '--prefix', path]);
-
-      install.stdout.on('data', data => process.stdout.write(data));
-
-      install.stderr.on('data', data => process.stderr.write(data));
-
-      install.on('exit', () => {
-        if (cb) cb();
-        resolve(true);
+const npmInstall = (path, silent, cb = null) => new Promise(async (resolve, reject) => {
+  if (silent) {
+    try {
+      loading.startLoading();
+      await shell(`npm install --prefix ${path}`, true, () => {
+        loading.stopLoading();
       });
+      resolve();
+    } catch (err) {
+      reject(err);
     }
-  });
-}
+  } else {
+    const install = spawn('npm', ['install', '--loglevel=info', '--no-spin', '--prefix', path]);
+
+    install.stdout.on('data', data => process.stdout.write(data));
+
+    install.stderr.on('data', data => process.stderr.write(data));
+
+    install.on('exit', () => {
+      if (cb) cb();
+      resolve();
+    });
+  }
+});
 
 module.exports = {
-  ensureDirExists,
-  stateValue,
   capitalize,
   upperCase,
+  stateValue,
   processStates,
+  ensureDirExists,
   writeFile,
-  npmInstall,
   shell,
+  npmInstall,
 };
