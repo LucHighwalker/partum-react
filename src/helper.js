@@ -3,6 +3,8 @@ const sys = require('child_process');
 
 const loading = require('./loading');
 
+const UpdateMsg = require('./messages/update');
+
 const { exec, spawn } = sys;
 
 const capitalize = string => string.charAt(0).toUpperCase() + string.slice(1);
@@ -30,6 +32,8 @@ const processStates = (states) => {
   });
   return `\n\t\tthis.state = {${processed}\n\t\t}`;
 };
+
+const dirExists = filePath => fs.existsSync(filePath);
 
 const ensureDirExists = (filePath) => {
   if (fs.existsSync(filePath) === false) {
@@ -81,13 +85,24 @@ const npmInstall = (path, silent, cb = null) => new Promise(async (resolve, reje
   }
 });
 
+const checkUpdate = async (pkg) => {
+  await shell('npm view partum-react version', false, (ver) => {
+    const version = ver.trim();
+    if (pkg.version !== version) {
+      process.stdout.write(UpdateMsg(pkg.version, version));
+    }
+  });
+};
+
 module.exports = {
   capitalize,
   upperCase,
   stateValue,
   processStates,
+  dirExists,
   ensureDirExists,
   writeFile,
   shell,
   npmInstall,
+  checkUpdate,
 };

@@ -5,12 +5,11 @@ const pkg = JSON.parse(JSON.stringify(require('./package.json')));
 const Generator = require('./src/generator');
 const Initializer = require('./src/initializer');
 const Options = require('./src/options');
-const { shell } = require('./src/helper');
+const { dirExists, shell, checkUpdate } = require('./src/helper');
 
 const ErrorHandler = require('./src/errorHandler');
 
 const HelpMsg = require('./src/messages/help');
-const UpdateMsg = require('./src/messages/update');
 
 const [, , ...args] = process.argv;
 
@@ -87,21 +86,23 @@ const main = async () => {
           );
         }
 
-        await shell('npm view partum-react version', false, (version) => {
-          if (pkg.version !== version.trim()) {
-            process.stdout.write(UpdateMsg(pkg.version, version));
-          }
-        });
+        await checkUpdate(pkg);
 
         name = command;
         destination = `${process.cwd()}/${name}`;
-        options = new Options(name);
 
-				let silent = options.processArgs(args); // eslint-disable-line
-				const initializer = new Initializer(options, destination, silent); // eslint-disable-line
+        if (dirExists(destination)) throw new Error(`Unable to generate new project.\n${destination} already exists.`);
+
+        options = new Options(name);
+        options.processArgs(args);
+
+				const initializer = new Initializer(options, destination, options.silent); // eslint-disable-line
         await initializer.initializeProject();
+
+        if (!options.silent) await checkUpdate(pkg);
+
         process.stdout.write(
-          `initialized ${name} in ${destination}\n\nnext steps:\n\t'cd ${name}'\n\t'npm start'\n`,
+          `\ninitialized ${name} in ${destination}\n\nnext steps:\n\t'cd ${name}'\n\t'npm start'\n`,
         );
     }
   } catch (error) {

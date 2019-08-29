@@ -5,12 +5,15 @@ const helper = require('./helper');
 module.exports = class Options extends Object {
   constructor(name, options = {}) {
     super();
+
     this.name = name;
     this.jsx = true;
     this.redux = false;
     this.styleExt = 'css';
     this.componentFolders = true;
     this.componentPath = '/src/components/';
+
+    this.silent = false;
 
     const keys = Object.keys(options);
     for (let i = 0; i < keys.length; i += 1) {
@@ -25,7 +28,6 @@ module.exports = class Options extends Object {
   }
 
   processArgs(args) {
-    let silent = false; // used in project initialization. Temp workaround?
     for (let i = 1; i < args.length; i += 1) {
       switch (args[i]) {
         case 'redux':
@@ -49,7 +51,7 @@ module.exports = class Options extends Object {
 
         case '-s':
         case '--silent':
-          silent = true;
+          this.silent = true;
           break;
 
         default:
@@ -60,7 +62,6 @@ module.exports = class Options extends Object {
           );
       }
     }
-    return silent;
   }
 
   save() {
@@ -68,11 +69,14 @@ module.exports = class Options extends Object {
     const currDirArr = currentDir.split('/');
     const currDirName = currDirArr[currDirArr.length - 1];
     const filePath = this.name === currDirName ? currentDir : `${currentDir}/${this.name}`;
+    const copy = Object.assign({}, this);
+
+    copy.silent = undefined;
 
     helper.ensureDirExists(filePath);
     fs.writeFile(
       `${filePath}/partum.json`,
-      JSON.stringify(this, null, 2),
+      JSON.stringify(copy, null, 2),
       (err) => {
         if (err) throw err;
       },
