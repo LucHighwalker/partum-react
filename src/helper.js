@@ -1,6 +1,8 @@
 const fs = require('fs');
 const sys = require('child_process');
 
+const pkg = JSON.parse(JSON.stringify(require('../package.json')));
+
 const loading = require('./loading');
 
 const UpdateMsg = require('./messages/update');
@@ -85,7 +87,7 @@ const npmInstall = (path, silent, cb = null) => new Promise(async (resolve, reje
   }
 });
 
-const checkUpdate = async (pkg) => {
+const checkUpdate = async () => {
   await shell('npm view partum-react version', false, (ver) => {
     const version = ver.trim();
     if (pkg.version !== version) {

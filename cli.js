@@ -5,7 +5,9 @@ const pkg = JSON.parse(JSON.stringify(require('./package.json')));
 const Generator = require('./src/generator');
 const Initializer = require('./src/initializer');
 const Options = require('./src/options');
-const { dirExists, shell, checkUpdate } = require('./src/helper');
+const {
+  dirExists, shell, checkUpdate,
+} = require('./src/helper');
 
 const ErrorHandler = require('./src/errorHandler');
 
@@ -72,7 +74,9 @@ const main = async () => {
       case '--version':
         shell('npm view partum-react version', false, (version) => {
           if (pkg.version !== version.trim()) {
-            process.stdout.write(`Partum-React version(outdated): ${pkg.version}\navailable version: ${version}\n`);
+            process.stdout.write(
+              `Partum-React version(outdated): ${pkg.version}\navailable version: ${version}\n`,
+            );
           } else {
             process.stdout.write(`Partum-React version(up to date): ${pkg.version}\n`);
           }
@@ -86,7 +90,7 @@ const main = async () => {
           );
         }
 
-        await checkUpdate(pkg);
+        await checkUpdate();
 
         name = command;
         destination = `${process.cwd()}/${name}`;
@@ -98,12 +102,6 @@ const main = async () => {
 
 				const initializer = new Initializer(options, destination, options.silent); // eslint-disable-line
         await initializer.initializeProject();
-
-        if (!options.silent) await checkUpdate(pkg);
-
-        process.stdout.write(
-          `\ninitialized ${name} in ${destination}\n\nnext steps:\n\t'cd ${name}'\n\t'npm start'\n`,
-        );
     }
   } catch (error) {
     ErrorHandler(error);

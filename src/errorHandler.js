@@ -1,3 +1,3 @@
 module.exports = (error) => {
-  process.stdout.write(`${error.message}\n`);
+  process.stdout.write(`ERROR: ${error.message}\n`);
 };
