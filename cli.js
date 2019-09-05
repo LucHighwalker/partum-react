@@ -51,7 +51,7 @@ const main = async () => {
 
       case '-d':
       case '--docs':
-        process.stdout.write('Opening https://luchighwalker.github.io/partum-react/#/\n');
+        process.stdout.write('Opening Partum React docs...\n');
         shell('xdg-open https://luchighwalker.github.io/partum-react/#/');
         break;
 
@@ -66,7 +66,7 @@ const main = async () => {
 				const destArr = destination.split('/'); // eslint-disable-line
         name = destArr[destArr.length - 1];
         options = new Options(name);
-        options.processArgs(args);
+        await options.askQuestion();
         options.save();
         break;
 
@@ -97,10 +97,7 @@ const main = async () => {
 
         if (dirExists(destination)) throw new Error(`Unable to generate new project.\n${destination} already exists.`);
 
-        options = new Options(name);
-        options.processArgs(args);
-
-				const initializer = new Initializer(options, destination, options.silent); // eslint-disable-line
+				const initializer = new Initializer(name, destination, false); // eslint-disable-line
         await initializer.initializeProject();
     }
   } catch (error) {

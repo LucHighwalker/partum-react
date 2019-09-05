@@ -4,8 +4,6 @@ const Options = require('./options');
 
 const ErrorHandler = require('./errorHandler');
 
-const optionsPath = path.join(process.cwd(), 'partum.json');
-
 const componentTemp = require('../boiler/templates/components/component');
 const funcComponentTemp = require('../boiler/templates/components/funcComponent');
 const styleTemp = require('../boiler/templates/components/style');
@@ -22,8 +20,7 @@ const {
 
 module.exports = class Generator {
   constructor() {
-    const options = JSON.parse(JSON.stringify(require(optionsPath))); // eslint-disable-line
-    this.options = new Options(options.name, options);
+    this.options = new Options('', true);
     this.rootReducerPath = path.join(process.cwd(), '/src/redux/reducers/rootReducer.js');
   }
 

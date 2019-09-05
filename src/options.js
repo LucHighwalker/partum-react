@@ -1,67 +1,53 @@
 const fs = require('fs');
+const path = require('path');
+
+const inquirer = require('inquirer');
+const { initPrompts, reduxPrompts } = require('./messages/prompts');
 
 const helper = require('./helper');
 
 module.exports = class Options extends Object {
-  constructor(name, options = {}) {
+  constructor(name, load = false) {
     super();
-
     this.name = name;
-    this.jsx = true;
-    this.redux = false;
-    this.styleExt = 'css';
-    this.componentFolders = true;
-    this.componentPath = '/src/components/';
 
-    this.silent = false;
+    if (load) this.loadOptions();
+  }
 
-    const keys = Object.keys(options);
+  loadOptions() {
+    const optionsPath = path.join(process.cwd(), 'partum.json');
+		const options = JSON.parse(JSON.stringify(require(optionsPath))); // eslint-disable-line
+    this.assignValues(options);
+  }
+
+  assignValues(values) {
+    const keys = Object.keys(values);
     for (let i = 0; i < keys.length; i += 1) {
-      this[keys[i]] = options[keys[i]];
-    }
-
-    if (this.redux) {
-      this.reduxPath = '/src/redux/';
-      this.actionPath = '/actions/';
-      this.reducerPath = '/reducers/';
+      this[keys[i]] = values[keys[i]];
     }
   }
 
-  processArgs(args) {
-    for (let i = 1; i < args.length; i += 1) {
-      switch (args[i]) {
-        case 'redux':
-          this.redux = true;
-          this.reduxPath = '/src/redux/';
-          this.actionPath = '/actions/';
-          this.reducerPath = '/reducers/';
-          break;
-
-        case 'js':
-          this.jsx = false;
-          break;
-
-        case 'scss':
-          this.styleExt = 'scss';
-          break;
-
-        case 'sass':
-          this.styleExt = 'sass';
-          break;
-
-        case '-s':
-        case '--silent':
-          this.silent = true;
-          break;
-
-        default:
-          throw new Error(
-            `Invalid option [${
-              args[i]
-            }]. Use 'partum --help' for a list of options.`,
-          );
-      }
-    }
+  askQuestion() {
+    return new Promise((resolve, reject) => {
+      inquirer
+        .prompt(initPrompts)
+        .then((answers) => {
+          if (answers.redux === true) {
+            inquirer
+              .prompt(reduxPrompts)
+              .then((reduxAnswers) => {
+                const allAnswers = Object.assign(answers, reduxAnswers);
+                this.assignValues(allAnswers);
+                resolve(allAnswers);
+              })
+              .catch(error => reject(error));
+          } else {
+            this.assignValues(answers);
+            resolve(answers);
+          }
+        })
+        .catch(error => reject(error));
+    });
   }
 
   save() {
@@ -74,12 +60,8 @@ module.exports = class Options extends Object {
     copy.silent = undefined;
 
     helper.ensureDirExists(filePath);
-    fs.writeFile(
-      `${filePath}/partum.json`,
-      JSON.stringify(copy, null, 2),
-      (err) => {
-        if (err) throw err;
-      },
-    );
+    fs.writeFile(`${filePath}/partum.json`, JSON.stringify(copy, null, 2), (err) => {
+      if (err) throw err;
+    });
   }
 };

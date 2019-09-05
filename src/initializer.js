@@ -4,6 +4,8 @@ const copy = require('ncp').ncp;
 const replace = require('replace-in-file');
 const rmdir = require('rimraf');
 
+const Options = require('./options');
+
 const {
   ensureDirExists, writeFile, npmInstall, shell, checkUpdate,
 } = require('./helper');
@@ -17,8 +19,8 @@ const indexStyle = require('../boiler/templates/styles/index');
 const rootReducer = require('../boiler/templates/redux/rootReducer');
 
 module.exports = class Initializer {
-  constructor(options, destination, silent = false) {
-    this.options = options;
+  constructor(name, destination, silent = false) {
+    this.options = new Options(name);
     this.boilerPath = path.join(__dirname, '../boiler/');
     this.tempPath = path.join(__dirname, '../_temp/');
     this.destination = destination;
@@ -32,6 +34,7 @@ module.exports = class Initializer {
 
   async initializeProject() {
     try {
+      await this.options.askQuestion();
       await this.createBase();
       await this.addSrc();
       await this.addStyle();
@@ -195,13 +198,12 @@ module.exports = class Initializer {
                     if (!this.silent) await checkUpdate();
 
                     process.stdout.write(
-                      `\ninitialized ${this.name} in ${this.destination}\n\nnext steps:\n\t'cd ${this.name}'${installMsg}\n\t'npm start'\n`,
+                      `\ninitialized ${this.options.name} in ${this.destination}\n\nnext steps:\n\t'cd ${this.options.name}'${installMsg}\n\t'npm start'\n`,
                     );
                   });
 
                 resolve();
               } catch (err) {
-								// eslint-disable-line
                 reject(err);
               }
             }
