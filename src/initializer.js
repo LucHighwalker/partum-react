@@ -7,7 +7,7 @@ const rmdir = require('rimraf');
 const Options = require('./options');
 
 const {
-  ensureDirExists, writeFile, npmInstall, shell, checkUpdate,
+  ensureDirExists, writeFile, npmInstall, shell,
 } = require('./helper');
 
 const appTemplate = require('../boiler/templates/src/App');
@@ -155,7 +155,7 @@ module.exports = class Initializer {
         } else {
           process.stdout.write('cleaning up temporary files\n');
           rmdir(this.tempPath, async (err) => {
-						// eslint-disable-line
+            // eslint-disable-line
             if (err) {
               reject(err);
             } else {
@@ -186,7 +186,7 @@ module.exports = class Initializer {
                     },
                   ])
                   .then(async (input) => {
-										let installMsg = ''; // eslint-disable-line
+                    let installMsg = ''; // eslint-disable-line
                     if (input.confirmed) {
                       process.stdout.write(`\nrunning npm install inside ${this.destination}\n`);
                       await npmInstall(this.destination, this.silent);
@@ -194,8 +194,6 @@ module.exports = class Initializer {
                       process.stdout.write('\nskipping npm install\n');
                       installMsg = "\n\t'npm install'";
                     }
-
-                    if (!this.silent) await checkUpdate();
 
                     process.stdout.write(
                       `\ninitialized ${this.options.name} in ${this.destination}\n\nnext steps:\n\t'cd ${this.options.name}'${installMsg}\n\t'npm start'\n`,

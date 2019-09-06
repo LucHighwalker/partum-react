@@ -1,5 +1,6 @@
-module.exports = (name, funcName, styleExt, redux = false) => (redux === false ? `import React from 'react';
-import './${name}.${styleExt}';
+module.exports = (name, funcName, styleExt, folders = false, redux = false) => (redux === false
+  ? `import React from 'react';
+import './${folders ? 'style' : name}.${styleExt}';
 
 function ${funcName}(props) {
 \treturn (
@@ -10,9 +11,10 @@ function ${funcName}(props) {
 }
 
 export default ${funcName};
-` : `import React from 'react';
+`
+  : `import React from 'react';
 import { connect } from "react-redux";
-import './${name}.${styleExt}';
+import './${folders ? 'style' : name}.${styleExt}';
 
 function ${funcName}(props) {
 \treturn (

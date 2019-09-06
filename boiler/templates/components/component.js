@@ -1,5 +1,6 @@
-module.exports = (name, className, styleExt, states = '', redux = false) => (redux === false ? `import React, { Component } from 'react';
-import './${name}.${styleExt}';
+module.exports = (name, className, styleExt, states = '', folders = false, redux = false) => (redux === false
+  ? `import React, { Component } from 'react';
+import './${folders ? 'style' : name}.${styleExt}';
 
 class ${className} extends Component {
 \tconstructor(props) {
@@ -18,9 +19,10 @@ class ${className} extends Component {
 }
 
 export default ${className};
-` : `import React, { Component } from 'react';
+`
+  : `import React, { Component } from 'react';
 import { connect } from "react-redux";
-import './${name}.${styleExt}';
+import './${folders ? 'style' : name}.${styleExt}';
 
 class ${className} extends Component {
 \tconstructor(props) {

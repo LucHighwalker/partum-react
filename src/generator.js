@@ -12,10 +12,7 @@ const reducerTemp = require('../boiler/templates/redux/reducer');
 const rootReducerTemp = require('../boiler/templates/redux/rootReducer');
 
 const {
-  ensureDirExists,
-  processStates,
-  capitalize,
-  upperCase,
+  ensureDirExists, processStates, capitalize, upperCase,
 } = require('./helper');
 
 module.exports = class Generator {
@@ -28,10 +25,16 @@ module.exports = class Generator {
   async generateAction(args) {
     try {
       if (this.options.redux) {
-        const actionFileDir = path.join(process.cwd(),
-          this.options.reduxPath, this.options.actionPath);
-        const reducerFileDir = path.join(process.cwd(),
-          this.options.reduxPath, this.options.reducerPath);
+        const actionFileDir = path.join(
+          process.cwd(),
+          this.options.reduxPath,
+          this.options.actionPath,
+        );
+        const reducerFileDir = path.join(
+          process.cwd(),
+          this.options.reduxPath,
+          this.options.reducerPath,
+        );
 
         const actionName = args[1];
         const actionType = upperCase(actionName);
@@ -89,7 +92,9 @@ module.exports = class Generator {
             if (err) {
               reject(err);
             } else {
-              const matches = data.match(/(case '[A-Za-z_-]+':\s+return (state|{\s+([a-zA-Z]+: [a-zA-Z0-9+\-_/*\s']+,\s+)+}))/gm);
+              const matches = data.match(
+                /(case '[A-Za-z_-]+':\s+return (state|{\s+([a-zA-Z]+: [a-zA-Z0-9+\-_/*\s']+,\s+)+}))/gm,
+              );
               const prevActions = matches.length > 0 ? `\n\t\t${matches.join('\n\n\t\t')}\n\n` : '';
               const reducer = reducerTemp(actionType, prevActions);
               fs.writeFile(reducerPath, reducer, (err) => {
@@ -157,7 +162,7 @@ module.exports = class Generator {
       ? path.join(process.cwd(), this.options.componentPath, name)
       : path.join(process.cwd(), this.options.componentPath);
 
-    const fileName = `${name}.${fileExt}`;
+    const fileName = this.options.componentFolders ? `index.${fileExt}` : `${name}.${fileExt}`;
     const componentName = capitalize(name);
     const rawStates = [];
 
@@ -183,25 +188,34 @@ module.exports = class Generator {
     const states = processStates(rawStates);
 
     const content = functional
-      ? funcComponentTemp(name, componentName, this.options.styleExt, this.options.redux)
-      : componentTemp(name, componentName, this.options.styleExt, states, this.options.redux);
+      ? funcComponentTemp(
+        name,
+        componentName,
+        this.options.styleExt,
+        this.options.componentFolders,
+        this.options.redux,
+      )
+      : componentTemp(
+        name,
+        componentName,
+        this.options.styleExt,
+        states,
+        this.options.componentFolders,
+        this.options.redux,
+      );
 
     ensureDirExists(filePath);
-    fs.writeFile(
-      path.join(filePath, fileName),
-      content,
-      (err) => {
-        if (err) {
-          throw err;
-        } else {
-          this.generateStyle(name, filePath);
-        }
-      },
-    );
+    fs.writeFile(path.join(filePath, fileName), content, (err) => {
+      if (err) {
+        throw err;
+      } else {
+        this.generateStyle(name, filePath);
+      }
+    });
   }
 
   generateStyle(name, filePath) {
-    const fileName = `${name}.${this.options.styleExt}`;
+    const fileName = `${this.options.componentFolders ? 'style' : name}.${this.options.styleExt}`;
     ensureDirExists(filePath);
     fs.writeFile(path.join(filePath, fileName), styleTemp(name), (err) => {
       if (err) {
