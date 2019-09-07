@@ -1,6 +1,6 @@
 {
   "name": "partum-react",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "An Angular-esque cli for React.",
   "repository": {
     "type": "git",
@@ -28,7 +28,6 @@
   "dependencies": {
     "inquirer": "^7.0.0",
     "ncp": "^2.0.0",
-    "replace-in-file": "^3.4.3",
     "rimraf": "^2.6.3"
   },
   "devDependencies": {
