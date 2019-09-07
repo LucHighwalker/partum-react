@@ -9,6 +9,8 @@ const UpdateMsg = require('./messages/update');
 
 const { exec, spawn } = sys;
 
+const parseJson = json => JSON.parse(JSON.stringify(json));
+
 const capitalize = string => string.charAt(0).toUpperCase() + string.slice(1);
 
 const upperCase = string => string.toUpperCase();
@@ -97,6 +99,7 @@ const checkUpdate = async () => {
 };
 
 module.exports = {
+  parseJson,
   capitalize,
   upperCase,
   stateValue,

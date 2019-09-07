@@ -1,13 +1,19 @@
 const inquirer = require('inquirer');
 const path = require('path');
 const copy = require('ncp').ncp;
-const replace = require('replace-in-file');
 const rmdir = require('rimraf');
+
+const npmPackage = require('../boiler/package/package.json');
 
 const Options = require('./options');
 
 const {
-  ensureDirExists, writeFile, npmInstall, shell, checkUpdate,
+  parseJson,
+  ensureDirExists,
+  writeFile,
+  npmInstall,
+  shell,
+  checkUpdate,
 } = require('./helper');
 
 const appTemplate = require('../boiler/templates/src/App');
@@ -20,6 +26,7 @@ const rootReducer = require('../boiler/templates/redux/rootReducer');
 
 module.exports = class Initializer {
   constructor(name, destination, silent = false) {
+    this.name = name;
     this.options = new Options(name);
     this.boilerPath = path.join(__dirname, '../boiler/');
     this.tempPath = path.join(__dirname, '../_temp/');
@@ -117,33 +124,20 @@ module.exports = class Initializer {
     });
   }
 
-  addPackage() {
-    return new Promise((resolve, reject) => {
-      const style = this.options.styleExt === 'css' ? 'base' : 'sass';
-      const redux = this.options.redux ? 'redux/' : '';
-      const pkgPath = `${redux}${style}`;
+  async addPackage() {
+    const sass = this.options.styleExt !== 'css';
+    const { redux } = this.options;
 
-      copy(`${this.boilerPath}package/${pkgPath}`, this.tempPath, (err) => {
-        if (err) {
-          reject(err);
-        } else {
-          replace(
-            {
-              files: `${this.tempPath}package.json`,
-              from: /(---name---)/gm,
-              to: this.options.name,
-            },
-            (err, _) => {
-              if (err) {
-                reject(err);
-              } else {
-                resolve(true);
-              }
-            },
-          );
-        }
-      });
-    });
+    let npmPkg = { name: this.name };
+    npmPkg = Object.assign(npmPkg, parseJson(npmPackage));
+
+    if (sass) npmPkg.dependencies['node-sass'] = '^4.12.0';
+    if (redux) {
+      npmPkg.dependencies.redux = '^4.0.4';
+      npmPkg.dependencies['redux-thunk'] = '^2.3.0';
+    }
+
+    await writeFile(path.join(this.tempPath, 'package.json'), JSON.stringify(npmPkg, null, 2));
   }
 
   finalize() {
@@ -155,7 +149,7 @@ module.exports = class Initializer {
         } else {
           process.stdout.write('cleaning up temporary files\n');
           rmdir(this.tempPath, async (err) => {
-						// eslint-disable-line
+            // eslint-disable-line
             if (err) {
               reject(err);
             } else {
@@ -186,7 +180,7 @@ module.exports = class Initializer {
                     },
                   ])
                   .then(async (input) => {
-										let installMsg = ''; // eslint-disable-line
+                    let installMsg = ''; // eslint-disable-line
                     if (input.confirmed) {
                       process.stdout.write(`\nrunning npm install inside ${this.destination}\n`);
                       await npmInstall(this.destination, this.silent);
